@@ -97,7 +97,7 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 
-// Read API URL from Vite .env (fallback to localhost:5000 for local development)
+// Read API base URL from Vite .env (falls back to local development port if missing)
 const rawBaseUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 const cleanBaseUrl = rawBaseUrl.replace(/\/+$/, ''); // Strip any accidental trailing slashes
 const API_URL = `${cleanBaseUrl}/api`;
@@ -105,13 +105,13 @@ const API_URL = `${cleanBaseUrl}/api`;
 // Configured Axios instance
 const api = axios.create({
   baseURL: API_URL,
-  withCredentials: true, // Critical for cross-origin cookies and sessions between localhost and Vercel
+  withCredentials: true, // Enables cross-origin cookie transfer between localhost and Vercel
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-// Attach JWT Bearer token from localStorage to every outgoing request
+// Attach JWT Bearer token from localStorage to outgoing requests
 api.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('token');
@@ -123,7 +123,7 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Intercept 401 Unauthorized responses to clear expired or invalid sessions
+// Intercept 401 Unauthorized responses to clean up expired sessions
 api.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -141,31 +141,35 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Fetch authenticated user profile on app load
+  // Fetch authenticated user profile
   const loadUser = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
       setLoading(false);
-      return;
+      return null;
     }
 
     try {
       const { data } = await api.get('/auth/me');
       if (data.success && data.user) {
         setUser(data.user);
+        return data.user;
       } else {
         localStorage.removeItem('token');
         setUser(null);
+        return null;
       }
     } catch (err) {
       console.error('Failed to load user session:', err.message);
       localStorage.removeItem('token');
       setUser(null);
+      return null;
     } finally {
       setLoading(false);
     }
   }, []);
 
+  // Hydrate user session on app mount
   useEffect(() => {
     loadUser();
   }, [loadUser]);
@@ -238,11 +242,11 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Handle OAuth callback token passed via URL parameter
+  // ✅ Fixed: Asynchronously awaits user hydration before resolving
   const handleOAuthSuccess = useCallback(
-    (token) => {
+    async (token) => {
       localStorage.setItem('token', token);
-      loadUser();
+      return await loadUser();
     },
     [loadUser]
   );
