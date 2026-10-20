@@ -187,7 +187,7 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '') + '/api';
+export const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000').replace(/\/$/, '');
 
 // Configured Axios instance exported for Redux thunks and services
 export const api = axios.create({
