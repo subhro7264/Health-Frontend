@@ -1,6 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
-
+import {api} from '../api/axios'
 export const fetchFitnessData = createAsyncThunk(
   'fitness/fetchFitnessData',
   
@@ -13,7 +13,7 @@ export const fetchFitnessData = createAsyncThunk(
         return rejectWithValue('No authentication token found. Please log in.');
       }
 
-      const response = await axios.get('http://localhost:5000/api/fit/summary', {
+      const response = await api.get(`${api}/fit/summary`, {
         headers: { Authorization: `Bearer ${token}` }
       });
 

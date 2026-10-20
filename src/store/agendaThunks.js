@@ -219,7 +219,7 @@
 
 
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from '../context/AuthContext'; // Import your pre-configured Axios instance
+import {api} from '../api/axios'
 
 // 1. FETCH AGENDAS (Scoped to authenticated user & optional date)
 export const fetchAgendas = createAsyncThunk(

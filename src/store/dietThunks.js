@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import { api } from '../context/AuthContext'// Path to your AuthContext
+import { api } from '../api/axios'// Path to your AuthContext
 
 // Fetch current user's saved diet plan on page load
 export const fetchUserDiet = createAsyncThunk(

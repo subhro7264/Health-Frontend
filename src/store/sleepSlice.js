@@ -1,20 +1,21 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import {api} from '../api/axios'
 
-const API_URL = 'http://localhost:5000/api';
+// const API_URL = 'http://localhost:5000/api';
 
 export const fetchWeeklySleep = createAsyncThunk('sleep/fetchWeekly', async (startOfWeek, { getState }) => {
   // Option A: Get token from your Redux auth slice state
   const token = getState().auth?.token || localStorage.getItem('token'); 
   
-  const response = await axios.get(`http://localhost:5000/api/weekly?startOfWeek=${startOfWeek}`, {
+  const response = await api.get(`${api}/weekly?startOfWeek=${startOfWeek}`, {
     headers: { Authorization: `Bearer ${token}` }
   });
   return response.data;
 });
 
 export const updateSleepHours = createAsyncThunk('sleep/updateHours', async ({ startOfWeek, day, hours }) => {
-  const response = await axios.post(`${API_URL}/update`, { startOfWeek, day, hours });
+  const response = await api.post(`${api}/update`, { startOfWeek, day, hours });
   return response.data; // Return the full data payload object
 });
 
