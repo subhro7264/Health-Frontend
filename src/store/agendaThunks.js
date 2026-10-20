@@ -122,34 +122,115 @@
 
 
 
+
+
+
+
+
+// import { createAsyncThunk } from '@reduxjs/toolkit';
+// import axios from 'axios';
+
+// const BASE_URL = 'http://localhost:5000/api/agenda';
+
+// // Helper to grab token and structure headers consistently
+// const getAuthHeaders = () => {
+//   const token = localStorage.getItem('token');
+//   if (!token) return null;
+//   return {
+//     headers: { Authorization: `Bearer ${token}` }
+//   };
+// };
+
+// // 1. FETCH AGENDAS (Scoped to authenticated user & optional date)
+// export const fetchAgendas = createAsyncThunk(
+//   'agenda/fetchAgendas',
+//   async (dateString, { rejectWithValue }) => {
+//     try {
+//       const config = getAuthHeaders();
+//       if (!config) return rejectWithValue('No authentication token found. Please log in.');
+
+//       // Avoids sending "?dateString=undefined" if no date is passed
+//       const url = dateString 
+//         ? `${BASE_URL}/getAgenda?dateString=${dateString}` 
+//         : `${BASE_URL}/getAgenda`;
+
+//       const response = await axios.get(url, config);
+//       return response.data;
+//     } catch (err) {
+//       return rejectWithValue(err.response?.data?.message || 'Failed to sync schedule');
+//     }
+//   }
+// );
+
+// // 2. ADD A NEW AGENDA ITEM
+// export const addAgenda = createAsyncThunk(
+//   'agenda/addAgenda',
+//   async (taskData, { rejectWithValue }) => {
+//     try {
+//       const config = getAuthHeaders();
+//       if (!config) return rejectWithValue('No authentication token found. Please log in.');
+
+//       const response = await axios.post(`${BASE_URL}/postAgenda`, taskData, config);
+//       return response.data;
+//     } catch (err) {
+//       return rejectWithValue(err.response?.data?.message || 'Failed to add agenda item');
+//     }
+//   }
+// );
+
+// // 3. DELETE AN AGENDA ITEM
+// export const deleteAgenda = createAsyncThunk(
+//   'agenda/deleteAgenda',
+//   async (id, { rejectWithValue }) => {
+//     try {
+//       const config = getAuthHeaders();
+//       if (!config) return rejectWithValue('No authentication token found. Please log in.');
+
+//       await axios.delete(`${BASE_URL}/deleteAgenda/${id}`, config);
+//       return id; // Pass ID to Redux extraReducers to filter out of state
+//     } catch (err) {
+//       return rejectWithValue(err.response?.data?.message || 'Failed to delete agenda item');
+//     }
+//   }
+// );
+
+// // 4. TOGGLE TASK COMPLETION STATUS
+// export const toggleAgendaStatus = createAsyncThunk(
+//   'agenda/toggleAgendaStatus',
+//   async ({ id, currentStatus }, { rejectWithValue }) => {
+//     try {
+//       const config = getAuthHeaders();
+//       if (!config) return rejectWithValue('No authentication token found. Please log in.');
+
+//       const response = await axios.put(
+//         `${BASE_URL}/toggleAgenda/${id}`,
+//         { completed: !currentStatus },
+//         config
+//       );
+//       return response.data;
+//     } catch (err) {
+//       return rejectWithValue(err.response?.data?.message || 'Failed to update task');
+//     }
+//   }
+// );
+
+
+
+
+
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-
-const BASE_URL = 'http://localhost:5000/api/agenda';
-
-// Helper to grab token and structure headers consistently
-const getAuthHeaders = () => {
-  const token = localStorage.getItem('token');
-  if (!token) return null;
-  return {
-    headers: { Authorization: `Bearer ${token}` }
-  };
-};
+import { api } from '../context/AuthContext'; // Import your pre-configured Axios instance
 
 // 1. FETCH AGENDAS (Scoped to authenticated user & optional date)
 export const fetchAgendas = createAsyncThunk(
   'agenda/fetchAgendas',
   async (dateString, { rejectWithValue }) => {
     try {
-      const config = getAuthHeaders();
-      if (!config) return rejectWithValue('No authentication token found. Please log in.');
-
-      // Avoids sending "?dateString=undefined" if no date is passed
       const url = dateString 
-        ? `${BASE_URL}/getAgenda?dateString=${dateString}` 
-        : `${BASE_URL}/getAgenda`;
+        ? `/agenda/getAgenda?dateString=${dateString}` 
+        : `/agenda/getAgenda`;
 
-      const response = await axios.get(url, config);
+      const response = await api.get(url);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to sync schedule');
@@ -162,10 +243,7 @@ export const addAgenda = createAsyncThunk(
   'agenda/addAgenda',
   async (taskData, { rejectWithValue }) => {
     try {
-      const config = getAuthHeaders();
-      if (!config) return rejectWithValue('No authentication token found. Please log in.');
-
-      const response = await axios.post(`${BASE_URL}/postAgenda`, taskData, config);
+      const response = await api.post('/agenda/postAgenda', taskData);
       return response.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to add agenda item');
@@ -178,10 +256,7 @@ export const deleteAgenda = createAsyncThunk(
   'agenda/deleteAgenda',
   async (id, { rejectWithValue }) => {
     try {
-      const config = getAuthHeaders();
-      if (!config) return rejectWithValue('No authentication token found. Please log in.');
-
-      await axios.delete(`${BASE_URL}/deleteAgenda/${id}`, config);
+      await api.delete(`/agenda/deleteAgenda/${id}`);
       return id; // Pass ID to Redux extraReducers to filter out of state
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || 'Failed to delete agenda item');
@@ -194,13 +269,9 @@ export const toggleAgendaStatus = createAsyncThunk(
   'agenda/toggleAgendaStatus',
   async ({ id, currentStatus }, { rejectWithValue }) => {
     try {
-      const config = getAuthHeaders();
-      if (!config) return rejectWithValue('No authentication token found. Please log in.');
-
-      const response = await axios.put(
-        `${BASE_URL}/toggleAgenda/${id}`,
-        { completed: !currentStatus },
-        config
+      const response = await api.put(
+        `/agenda/toggleAgenda/${id}`,
+        { completed: !currentStatus }
       );
       return response.data;
     } catch (err) {
