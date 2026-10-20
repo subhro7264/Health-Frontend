@@ -99,18 +99,21 @@ import axios from 'axios';
 
 const AuthContext = createContext();
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+// Configured Axios instance exported for Redux thunks and services
+export const api = axios.create({
+  baseURL: API_URL,
+  withCredentials: true,
+});
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Configure axios to always send session cookies
-  axios.defaults.withCredentials = true;
-
   const checkUserStatus = async () => {
     try {
-      const { data } = await axios.get(`${API_URL}/auth/me`);
+      const { data } = await api.get('/auth/me');
       if (data.success) {
         setUser(data.user);
       } else {
@@ -128,7 +131,7 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const login = async (email, password) => {
-    const { data } = await axios.post(`${API_URL}/auth/login`, { email, password });
+    const { data } = await api.post('/auth/login', { email, password });
     if (data.success) {
       setUser(data.user);
     }
@@ -136,13 +139,12 @@ export const AuthProvider = ({ children }) => {
   };
 
   const loginWithGoogle = () => {
-    // Dynamic redirect using VITE_API_URL
     window.location.href = `${API_URL}/auth/google`;
   };
 
   const logout = async () => {
     try {
-      await axios.post(`${API_URL}/auth/logout`);
+      await api.post('/auth/logout');
       setUser(null);
     } catch (err) {
       console.error('Logout error:', err);
