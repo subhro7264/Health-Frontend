@@ -98,9 +98,9 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import axios from 'axios';
 
 const AuthContext = createContext();
-const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api').replace(/\/$/, '');
+// const API_URL = (import.meta.env.VITE_API_URL || 'http://localhost:5000/').replace(/\/$/, '');
 
-// export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+export const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Configured Axios instance exported for Redux thunks and services
 export const api = axios.create({
@@ -139,13 +139,13 @@ export const AuthProvider = ({ children }) => {
     return data;
   };
 
-  // const loginWithGoogle = () => {
-  //   window.location.href = `${API_URL}/auth/google`;
-  // };
-
   const loginWithGoogle = () => {
-  window.location.href = `${API_URL}/auth/google`;
-};
+    window.location.href = `${API_URL}/auth/google`;
+  };
+
+//   const loginWithGoogle = () => {
+//   window.location.href = `${API_URL}/auth/google`;
+// };
 
   const logout = async () => {
     try {
