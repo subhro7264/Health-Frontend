@@ -117,7 +117,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useAuth } from '../../../context/AuthContext';
 
-const API_BASE_URL = "http://localhost:5000/api/hydration";
+const API_BASE_URL = "https://health-backend-smoky.vercel.app/api/hydration";
 
 const Hydration = () => {
   const { user } = useAuth();
