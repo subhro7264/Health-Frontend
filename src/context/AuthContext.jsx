@@ -144,7 +144,7 @@ export const AuthProvider = ({ children }) => {
   // };
 
   const loginWithGoogle = () => {
-  window.location.href = `${API_URL}/api/auth/google`;
+  window.location.href = `${API_URL}/auth/google`;
 };
 
   const logout = async () => {
